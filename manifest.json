@@ -3,10 +3,7 @@
   "name": "JP Learn Microsoft.com Update Checker",
   "version": "1.0",
   "description": "Checks the English version update date on Microsoft Learn pages and compares it with the Japanese version to notify users.",
-  "permissions": [
-    "activeTab",
-    "scripting"
-  ],
+  "permissions": [],
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
