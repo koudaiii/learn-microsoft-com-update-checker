@@ -1,0 +1,27 @@
+{
+  "name": "jp-learn-microsoft-com-update-checker",
+  "version": "1.0.0",
+  "description": "Chrome extension to check and display the latest update date from the English version of Microsoft Learn pages when viewing the Japanese version.",
+  "main": "src/content.js",
+  "scripts": {
+    "test:unit": "jest tests/unit",
+    "test:e2e": "jest tests/e2e"
+  },
+  "author": "Kodai Sakabe",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.4",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "puppeteer": "^23.2.0"
+  },
+  "keywords": [
+    "chrome-extension",
+    "microsoft-learn",
+    "jp-learn",
+    "update-checker",
+    "localization"
+  ]
+}
