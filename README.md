@@ -1,8 +1,26 @@
-# JP Learn Microsoft.com Update Checker
+# JP Learn Microsoft\.com Update Checker
 
 This Chrome extension is specifically designed to check and display the latest update date from the English version of the Microsoft Learn page when you're viewing the Japanese version (`https://learn.microsoft.com/ja-jp`).
 
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [JP Learn Microsoft\.com Update Checker](#jp-learn-microsoftcom-update-checker)
+  - [Features](#features)
+  - [Installation](#installation)
+    - [Prerequisites](#prerequisites)
+    - [Steps](#steps)
+  - [Usage](#usage)
+  - [Testing](#testing)
+  - [Contribution](#contribution)
+  - [License](#license)
+
+<!-- /code_chunk_output -->
+
 ## Features
+
+![](img/demo.png)
 
 - Automatically fetches the latest update date from the corresponding English version (`en-us`) of the Microsoft Learn page.
 - Displays the English version's update date directly below the Japanese version's update date.
@@ -20,7 +38,7 @@ This Chrome extension is specifically designed to check and display the latest u
 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/update-checker-extension.git
+git clone https://github.com/koudaiii/update-checker-extension.git
 cd update-checker-extension
 ```
 
