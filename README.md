@@ -52,9 +52,9 @@ npm install
 
 3. Load the Extension into Chrome
 
-3.1. Open Chrome and navigate to chrome://extensions/.
-3.2. Enable Developer mode by toggling the switch in the top right corner.
-3.3. Click on Load unpacked and select the update-checker-extension directory.
+- Open Chrome and navigate to chrome://extensions/.
+- Enable Developer mode by toggling the switch in the top right corner.
+- Click on Load unpacked and select the update-checker-extension directory.
 
 4. Verify Installation
 
@@ -73,8 +73,7 @@ Navigate to a page such as https://learn.microsoft.com/ja-jp/some-page.
 Below the existing update date, you will see the English version's update date with a link to the English page.
 
 ```
-記事のレビュー日: 2024/08/24
-英語版の更新日: 08/24/2024
+[アーティクル]・2024/08/24 英語版の更新日: 08/24/2024
 ```
 
 Clicking on the English update date link will open the corresponding English page in a new tab.
