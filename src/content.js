@@ -29,10 +29,10 @@ if (currentUrl.startsWith("https://learn.microsoft.com/ja-jp/")) {
         if (englishDate) {
           // Add update info to Japanese page
           const updateInfo = document.createElement("p");
-          updateInfo.style.color = "blue"; // <p> default color is black
+          updateInfo.className = "text-color"; // <class="text-color"> is defined in CSS
           updateInfo.style.marginTop = "0"; // <p> default margin-top is 1rem
           updateInfo.style.marginLeft = "1px"; // <p> default margin-left is 0
-          updateInfo.innerHTML = `英語版の更新日: <a href="${englishUrl}" target="_blank" style="color: blue;">${englishDate}</a>`;
+          updateInfo.innerHTML = `英語版の更新日: <a href="${englishUrl}" target="_blank" class="text-color">${englishDate}</a>`;
           japaneseDateElement.parentElement.appendChild(updateInfo);
         }
       })
