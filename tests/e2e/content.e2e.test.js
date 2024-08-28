@@ -40,6 +40,14 @@ describe('JP Learn Microsoft.com Update Checker E2E Test', () => {
       return targetParagraph ? targetParagraph.innerText : null;
     });
     expect(englishDateText).toMatch(/英語版の更新日:/);
+
+    // text-color class is added to the paragraph element
+    const hasTextColorClass = await page.evaluate(() => {
+    const updateInfoElement = document.querySelector('p.text-color');
+    return updateInfoElement ? updateInfoElement.classList.contains('text-color') : false;
+  });
+
+  expect(hasTextColorClass).toBe(true);
   });
 
   test('should not run script on non-ja-jp pages', async () => {
