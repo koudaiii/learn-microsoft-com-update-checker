@@ -23,9 +23,10 @@
     // Parse HTML in English page
     const parser = new DOMParser();
     const doc = parser.parseFromString(data, "text/html");
-    const englishDate = doc.querySelector('time[aria-label="Article review date"]')?.innerText;
+    const englishDateStr = doc.querySelector('time[aria-label="Article review date"]')?.getAttribute("datetime");
 
-    if (!englishDate) return;
+    if (!englishDateStr) return;
+    const englishDate = new Date(englishDateStr).toLocaleDateString("ja-JP");
 
     // Add update info to Japanese page
     const updateInfo = document.createElement("p");
