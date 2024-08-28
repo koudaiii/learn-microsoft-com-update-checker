@@ -1,0 +1,11 @@
+/* light mode */
+.text-color {
+  color: #0000FF; /* blue */
+}
+
+/* dark mode */
+@media (prefers-color-scheme: dark) {
+  .text-color {
+      color: #ADD8E6; /* light blue */
+  }
+}

@@ -12,7 +12,8 @@
   "content_scripts": [
     {
       "matches": ["https://learn.microsoft.com/ja-jp/*"],
-      "js": ["src/content.js"]
+      "js": ["src/content.js"],
+      "css": ["src/styles.css"]
     }
   ],
   "action": {
