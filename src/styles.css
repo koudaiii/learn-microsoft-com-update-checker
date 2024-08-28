@@ -6,6 +6,6 @@
 /* dark mode */
 @media (prefers-color-scheme: dark) {
   .text-color {
-      color: #ADD8E6; /* light blue */
+      color: #75B6E7; /* light blue */
   }
 }
