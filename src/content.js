@@ -23,16 +23,26 @@ if (currentUrl.startsWith("https://learn.microsoft.com/ja-jp/")) {
           'time[aria-label="Article review date"]'
         );
         const englishDate = englishDateElement
-          ? englishDateElement.innerText
+          ? new Date(englishDateElement.innerText)
           : null;
 
         if (englishDate) {
+          // Get Japanese date
+          const japaneseDate = new Date(japaneseDateElement.innerText);
           // Add update info to Japanese page
           const updateInfo = document.createElement("p");
-          updateInfo.className = "text-color"; // <class="text-color"> is defined in CSS
-          updateInfo.style.marginTop = "0"; // <p> default margin-top is 1rem
-          updateInfo.style.marginLeft = "1px"; // <p> default margin-left is 0
-          updateInfo.innerHTML = `英語版の更新日: <a href="${englishUrl}" target="_blank" class="text-color">${englishDate}</a>`;
+          // Compare English date and Japanese date
+          if (englishDate > japaneseDate) {
+            // Display alert if English page is updated
+            updateInfo.className = "alert is-primary"; // <class="text-color"> is defined in CSS
+            updateInfo.innerHTML = `<span class="icon"><span class="docon docon-status-error-outline" style="margin: 0px"></span></span> 英語版の更新日: <a href="${englishUrl}" target="_blank">${englishDate.toLocaleDateString()}</a>`;
+          } else {
+            // Display info if English page is not updated
+            updateInfo.style.marginTop = "0"; // <p> default margin-top is 1rem
+            updateInfo.style.marginLeft = "3px"; // <p> default margin-left is 0
+            updateInfo.className = "text-color"; // <class="text-color"> is defined in CSS
+            updateInfo.innerHTML = `英語版の更新日: <a href="${englishUrl}" target="_blank" class="text-color">${englishDate.toLocaleDateString()}</a>`;
+          }
           japaneseDateElement.parentElement.appendChild(updateInfo);
         }
       })
