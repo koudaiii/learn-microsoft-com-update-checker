@@ -1,11 +1,28 @@
 /* light mode */
-.text-color {
+.text-color-light {
   color: #0000FF; /* blue */
 }
 
 /* dark mode */
+.text-color-dark {
+  color: #ADD8E6; /* light blue */
+}
+
+/* high-contrast mode */
+.text-color-high-contrast {
+  color: #FFD700; /* gold */
+}
+
+/* Fallback for dark mode using media query */
 @media (prefers-color-scheme: dark) {
   .text-color {
       color: #ADD8E6; /* light blue */
+  }
+}
+
+/* Fallback for light mode using media query */
+@media (prefers-color-scheme: light) {
+  .text-color {
+      color: #0000FF; /* blue */
   }
 }
