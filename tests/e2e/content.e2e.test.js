@@ -1,9 +1,10 @@
+const puppeteer = require('puppeteer');
+const path = require('path');
+
 /**
  * @jest-environment node
  */
 
-const puppeteer = require('puppeteer');
-const path = require('path');
 
 describe('JP Learn Microsoft.com Update Checker E2E Test', () => {
   let browser;
@@ -43,11 +44,11 @@ describe('JP Learn Microsoft.com Update Checker E2E Test', () => {
 
     // text-color class is added to the paragraph element
     const hasTextColorClass = await page.evaluate(() => {
-    const updateInfoElement = document.querySelector('p.text-color');
-    return updateInfoElement ? updateInfoElement.classList.contains('text-color') : false;
-  });
+      const updateInfoElement = document.querySelector('p.text-color');
+      return updateInfoElement ? updateInfoElement.classList.contains('text-color') : false;
+    });
 
-  expect(hasTextColorClass).toBe(true);
+    expect(hasTextColorClass).toBe(true);
   });
 
   test('should not run script on non-ja-jp pages', async () => {
