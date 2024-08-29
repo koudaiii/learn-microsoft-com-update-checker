@@ -57,4 +57,17 @@ describe('JP Learn Microsoft.com Update Checker E2E Test', () => {
     const japaneseDateElement = await page.$('time[aria-label="記事のレビュー日"]');
     expect(japaneseDateElement).toBeNull();
   });
+
+  test('should run script with jp-learn-microsoft-com-update-checker-debug flag', async () => {
+    await page.goto('https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview?jp-learn-microsoft-com-update-checker-debug=true');
+
+    // alert is-primary class is added to the paragraph element
+    const hasAlertIsPrimaryClass = await page.evaluate(() => {
+      const updateInfoElement = document.querySelector('p.alert.is-primary');
+      return updateInfoElement ? updateInfoElement.classList.contains('alert') : false;
+    });
+
+    expect(hasAlertIsPrimaryClass).toBe(true);
+  });
+
 });

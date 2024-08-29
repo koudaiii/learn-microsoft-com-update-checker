@@ -1,5 +1,6 @@
 // Get current URL
 const currentUrl = window.location.href;
+const debug = new URLSearchParams(window.location.search).get("jp-learn-microsoft-com-update-checker-debug");
 
 // Check if the page(https://learn.microsoft.com/ja-jp) is in Japanese
 if (currentUrl.startsWith("https://learn.microsoft.com/ja-jp/")) {
@@ -34,7 +35,7 @@ if (currentUrl.startsWith("https://learn.microsoft.com/ja-jp/")) {
           // Add icon to update info
           icon = "";
           // Compare English date and Japanese date
-          if (englishDate > japaneseDate) {
+          if (englishDate > japaneseDate || debug === "true") {
             // Display alert if English page is updated
             updateInfo.className = "alert is-primary"; // <class="alert is-primary"> is defined in CSS
             updateInfo.style.margin = "5px";
