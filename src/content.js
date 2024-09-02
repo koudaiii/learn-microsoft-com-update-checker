@@ -9,7 +9,7 @@
   const debug = new URLSearchParams(window.location.search).get("jp-learn-microsoft-com-update-checker-debug");
 
   // Get Japanese date element
-  const japaneseDateElement = document.querySelector('time[aria-label="記事のレビュー日"]');
+  const japaneseDateElement = document.querySelector('time[data-article-date]');
   if (!japaneseDateElement) return;
 
   // Parse Japanese date
@@ -28,7 +28,7 @@
     const parser = new DOMParser();
     const doc = parser.parseFromString(data, "text/html");
 
-    const englishDateStr = doc.querySelector('time[aria-label="Article review date"]')?.getAttribute("datetime");
+    const englishDateStr = doc.querySelector('time[data-article-date]')?.getAttribute("datetime");
     if (!englishDateStr) return;
     const englishDate = new Date(englishDateStr);
 
