@@ -2,9 +2,13 @@
   // Get current URL
   const currentUrl = window.location.href;
 
+  // Use a regular expression to extract the language code
+  const currentLang = currentUrl.match(/https:\/\/learn\.microsoft\.com\/([^\/]+)\//);
+  if (!currentLang[1]) return;
+
   // Check if the page(https://learn.microsoft.com/ja-jp) is in Japanese
   const lang = 'ja-jp';
-  if (!currentUrl.startsWith(`https://learn.microsoft.com/${lang}`)) return;
+  if (!currentLang === lang) return;
 
   const debug = new URLSearchParams(window.location.search).get("jp-learn-microsoft-com-update-checker-debug");
 
