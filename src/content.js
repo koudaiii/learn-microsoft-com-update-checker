@@ -8,16 +8,16 @@
 
   const debug = new URLSearchParams(window.location.search).get("jp-learn-microsoft-com-update-checker-debug");
 
+  // Get Japanese date element
+  const japaneseDateElement = document.querySelector('time[aria-label="記事のレビュー日"]');
+  if (!japaneseDateElement) return;
+
+  // Parse Japanese date
+  const japaneseDateStr = japaneseDateElement.getAttribute("datetime");
+  const japaneseDate = new Date(japaneseDateStr);
+
   // Translate URL to English
   const englishUrl = currentUrl.replace(`/${lang}/`, "/en-us/");
-
-  // Get Japanese date element
-  const japaneseDateElement = document.querySelector(
-    'time[aria-label="記事のレビュー日"]'
-  );
-
-  if (!japaneseDateElement) return;
-  const japaneseDate = new Date(japaneseDateElement.innerText);
 
   try {
     // Get English page and parse update date
@@ -27,9 +27,10 @@
     // Parse HTML in English page
     const parser = new DOMParser();
     const doc = parser.parseFromString(data, "text/html");
-    const englishDateStr = doc.querySelector('time[aria-label="Article review date"]')?.getAttribute("datetime");
 
+    const englishDateStr = doc.querySelector('time[aria-label="Article review date"]')?.getAttribute("datetime");
     if (!englishDateStr) return;
+    const englishDate = new Date(englishDateStr);
 
     // Add update info to current page
     const updateInfo = document.createElement("p");
@@ -44,11 +45,12 @@
         return "text-color";
       })(document.querySelector('button[data-theme-to][aria-pressed="true"]').getAttribute("data-theme-to"));
 
-      const englishDate = new Date(englishDateStr);
 
       // Add icon to update info
       informationIcon = "";
 
+      console.log("English date:", englishDate);
+      console.log("Japanese date:", japaneseDate);
       // Compare English date and Japanese date
       if (englishDate > japaneseDate || debug === "true") {
         // Display alert if English page is updated
