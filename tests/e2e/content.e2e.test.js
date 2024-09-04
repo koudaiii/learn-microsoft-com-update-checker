@@ -121,12 +121,6 @@ describe('JP Learn Microsoft.com Update Checker E2E Test', () => {
     expect(hasTextColorClass).toBe(true);
   });
 
-  test('should not run script on non-ja-jp pages', async () => {
-    await page.goto('https://learn.microsoft.com/en-us/azure/virtual-machines/overview');
-    const japaneseDateElement = await page.$('time[aria-label="記事のレビュー日"]');
-    expect(japaneseDateElement).toBeNull();
-  });
-
   test('should not run script on en-us pages on light theme', async () => {
     await page.goto('https://learn.microsoft.com/en-us/azure/virtual-machines/overview');
 
