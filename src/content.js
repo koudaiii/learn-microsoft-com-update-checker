@@ -1,3 +1,9 @@
+// languageLabels is a dictionary that maps message from language codes to the corresponding language
+const languageLabels = {
+  'ja-jp': '英語版の更新日',
+  // Add more language labels as needed
+};
+
 (async () => {
   // Get current URL
   const currentUrl = window.location.href;
@@ -70,7 +76,11 @@
         updateInfo.className = textColorClass; // Apply appropriate text color based on theme
       }
 
-      updateInfo.innerHTML = informationIcon + `英語版の更新日: <a href="${englishUrl}" target="_blank" class="${textColorClass}">${englishDate.toLocaleDateString(currentLang)}</a>`;
+      // Set update info text based on language
+      const languageLabel = languageLabels[currentLang] || 'last updated on';
+
+      // Display update info
+      updateInfo.innerHTML = informationIcon + `${languageLabel}: <a href="${englishUrl}" target="_blank" class="${textColorClass}">${englishDate.toLocaleDateString(currentLang)}</a>`;
     }
     updateClass();
     const observer = new MutationObserver(updateClass);
