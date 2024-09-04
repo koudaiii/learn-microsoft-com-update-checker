@@ -49,7 +49,7 @@
         if (theme === "light") return "text-color-light";
         return "text-color";
       })(document.querySelector('button[data-theme-to][aria-pressed="true"]').getAttribute("data-theme-to"));
-
+      console.log("textColorClass:", textColorClass);
 
       // Add icon to update info
       informationIcon = "";
