@@ -111,6 +111,27 @@ describe('JP Learn Microsoft.com Update Checker E2E Test', () => {
     expect(japaneseDateElement).toBeNull();
   });
 
+  test('should not run script on en-us pages on light theme', async () => {
+    await page.goto('https://learn.microsoft.com/en-us/azure/virtual-machines/overview');
+
+    // Click the button to set the theme to light
+    await page.evaluate(() => {
+      const themeButton = document.querySelector('button[data-theme-to="light"]');
+      themeButton.click();
+    });
+    await page.waitForSelector('button[aria-pressed="true"]');
+
+    // Wait for the paragraph element with the 'text-color-light' class to be added
+    await page.waitForSelector('p.text-color-light', { hidden: true });
+
+    const hasTextColorClass = await page.evaluate(() => {
+      const textElement = document.querySelector('p.text-color-light');
+      return textElement === null;
+    });
+    expect(hasTextColorClass).toBe(true);
+  });
+
+
   test('should run script with jp-learn-microsoft-com-update-checker-debug flag', async () => {
     await page.goto('https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview?jp-learn-microsoft-com-update-checker-debug=true');
 
