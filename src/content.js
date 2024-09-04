@@ -3,8 +3,9 @@
   const currentUrl = window.location.href;
 
   // Use a regular expression to extract the language code
-  const currentLang = currentUrl.match(/https:\/\/learn\.microsoft\.com\/([^\/]+)\//);
-  if (!currentLang[1]) return;
+  const languageCodeMatch = currentUrl.match(/https:\/\/learn\.microsoft\.com\/([^\/]+)\//);
+  const currentLang = languageCodeMatch ? languageCodeMatch[1] : null;
+  if (!currentLang) return;
 
   // Check if the page(https://learn.microsoft.com/ja-jp) is in Japanese
   const lang = 'ja-jp';
@@ -21,7 +22,7 @@
   const japaneseDate = new Date(japaneseDateStr);
 
   // Translate URL to English
-  const englishUrl = currentUrl.replace(`/${lang}/`, "/en-us/");
+  const englishUrl = currentUrl.replace(`/${currentLang}/`, "/en-us/");
 
   try {
     // Get English page and parse update date
@@ -69,7 +70,7 @@
         updateInfo.className = textColorClass; // Apply appropriate text color based on theme
       }
 
-      updateInfo.innerHTML = informationIcon + `英語版の更新日: <a href="${englishUrl}" target="_blank" class="${textColorClass}">${englishDate.toLocaleDateString(lang)}</a>`;
+      updateInfo.innerHTML = informationIcon + `英語版の更新日: <a href="${englishUrl}" target="_blank" class="${textColorClass}">${englishDate.toLocaleDateString(currentLang)}</a>`;
     }
     updateClass();
     const observer = new MutationObserver(updateClass);
