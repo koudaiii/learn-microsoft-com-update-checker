@@ -40,14 +40,64 @@ describe('JP Learn Microsoft.com Update Checker E2E Test', () => {
       return targetParagraph ? targetParagraph.innerText : null;
     });
     expect(englishDateText).toMatch(/英語版の更新日:/);
+  });
+
+  test('should display light theme when button[data-theme-to]=light and button[aria-pressed]=true', async () => {
+    await page.goto('https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview');
+
+    // Click the button to set the theme to light
+    await page.evaluate(() => {
+      const themeButton = document.querySelector('button[data-theme-to="light"]');
+      themeButton.click();
+    });
+    await page.waitForSelector('button[aria-pressed="true"]');
 
     // Wait for the paragraph element with the 'text-color-light' class to be added
     await page.waitForSelector('p.text-color-light');
 
-    // text-color class is added to the paragraph element
     const hasTextColorClass = await page.evaluate(() => {
-      const updateInfoElement = document.querySelector('p.text-color-light');
-      return updateInfoElement ? updateInfoElement.classList.contains('text-color-light') : false;
+      const textElement = document.querySelector('p.text-color-light');
+      return textElement !== null;
+    });
+    expect(hasTextColorClass).toBe(true);
+  });
+
+  test('should display dark theme when button[data-theme-to]=dark and button[aria-pressed]=true', async () => {
+    await page.goto('https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview');
+
+    // Click the button to set the theme to dark
+    await page.evaluate(() => {
+      const themeButton = document.querySelector('button[data-theme-to="dark"]');
+      themeButton.click();
+    });
+    await page.waitForSelector('button[aria-pressed="true"]');
+
+    // Wait for the paragraph element with the 'text-color-dark' class to be added
+    await page.waitForSelector('p.text-color-dark');
+
+    const hasTextColorClass = await page.evaluate(() => {
+      const textElement = document.querySelector('p.text-color-dark');
+      return textElement !== null;
+    });
+    expect(hasTextColorClass).toBe(true);
+  });
+
+  test('should display high-contrast theme when button[data-theme-to]=high-contrast and button[aria-pressed]=true', async () => {
+    await page.goto('https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview');
+
+    // Click the button to set the theme to high-contrast
+    await page.evaluate(() => {
+      const themeButton = document.querySelector('button[data-theme-to="high-contrast"]');
+      themeButton.click();
+    });
+    await page.waitForSelector('button[aria-pressed="true"]');
+
+    // Wait for the paragraph element with the 'text-color-high-contrast' class to be added
+    await page.waitForSelector('p.text-color-high-contrast');
+
+    const hasTextColorClass = await page.evaluate(() => {
+      const textElement = document.querySelector('p.text-color-high-contrast');
+      return textElement !== null;
     });
     expect(hasTextColorClass).toBe(true);
   });
