@@ -35,9 +35,12 @@ describe('JP Learn Microsoft.com Update Checker E2E Test', () => {
     await page.waitForSelector('time[data-article-date]');
 
     const englishDateText = await page.evaluate(() => {
-      const paragraphs = Array.from(document.querySelectorAll('p'));
-      const targetParagraph = paragraphs.find(p => p.textContent.includes('英語版の更新日:'));
-      return targetParagraph ? targetParagraph.innerText : null;
+      return new Promise(resolve => setTimeout(resolve, 1000)) // Add a delay to allow time for the element to be added
+        .then(() => {
+          const paragraphs = Array.from(document.querySelectorAll('p'));
+          const targetParagraph = paragraphs.find(p => p.textContent.includes('英語版の更新日:'));
+          return targetParagraph ? targetParagraph.innerText : null;
+        });
     });
     expect(englishDateText).toMatch(/英語版の更新日:/);
   });
