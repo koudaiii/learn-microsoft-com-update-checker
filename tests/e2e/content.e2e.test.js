@@ -62,6 +62,26 @@ describe('JP Learn Microsoft.com Update Checker E2E Test', () => {
     expect(hasTextColorClass).toBe(true);
   });
 
+  test('should display dark theme when button[data-theme-to]=dark and button[aria-pressed]=true', async () => {
+    await page.goto('https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview');
+
+    // Click the button to set the theme to dark
+    await page.evaluate(() => {
+      const themeButton = document.querySelector('button[data-theme-to="dark"]');
+      themeButton.click();
+    });
+    await page.waitForSelector('button[aria-pressed="true"]');
+
+    // Wait for the paragraph element with the 'text-color-dark' class to be added
+    await page.waitForSelector('p.text-color-dark');
+
+    const hasTextColorClass = await page.evaluate(() => {
+      const textElement = document.querySelector('p.text-color-dark');
+      return textElement !== null;
+    });
+    expect(hasTextColorClass).toBe(true);
+  });
+
   test('should not run script on non-ja-jp pages', async () => {
     await page.goto('https://learn.microsoft.com/en-us/azure/virtual-machines/overview');
     const japaneseDateElement = await page.$('time[aria-label="記事のレビュー日"]');
