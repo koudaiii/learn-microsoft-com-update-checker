@@ -45,6 +45,22 @@ describe('JP Learn Microsoft.com Update Checker E2E Test', () => {
     expect(englishDateText).toMatch(/英語版の更新日:/);
   });
 
+  test('should display English update date on zh-cn Microsoft Learn page', async () => {
+    await page.goto('https://learn.microsoft.com/zh-cn/azure/virtual-machines/overview');
+    // Wait for the time element with the 'data-article-date' attribute to be added
+    await page.waitForSelector('time[data-article-date]');
+
+    const englishDateText = await page.evaluate(() => {
+      return new Promise(resolve => setTimeout(resolve, 1000)) // Add a delay to allow time for the element to be added
+        .then(() => {
+          const paragraphs = Array.from(document.querySelectorAll('p'));
+          const targetParagraph = paragraphs.find(p => p.textContent.includes('last updated on:'));
+          return targetParagraph ? targetParagraph.innerText : null;
+        });
+    });
+    expect(englishDateText).toMatch(/last updated on:/);
+  });
+
   test('should display light theme when button[data-theme-to]=light and button[aria-pressed]=true', async () => {
     await page.goto('https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview');
 
@@ -103,12 +119,6 @@ describe('JP Learn Microsoft.com Update Checker E2E Test', () => {
       return textElement !== null;
     });
     expect(hasTextColorClass).toBe(true);
-  });
-
-  test('should not run script on non-ja-jp pages', async () => {
-    await page.goto('https://learn.microsoft.com/en-us/azure/virtual-machines/overview');
-    const japaneseDateElement = await page.$('time[aria-label="記事のレビュー日"]');
-    expect(japaneseDateElement).toBeNull();
   });
 
   test('should not run script on en-us pages on light theme', async () => {
