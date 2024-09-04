@@ -31,8 +31,8 @@ describe('JP Learn Microsoft.com Update Checker E2E Test', () => {
   test('should display English update date on Japanese Microsoft Learn page', async () => {
     await page.goto('https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview');
 
-    // Wait for the time element with the '記事のレビュー日' aria-label to be added
-    await page.waitForSelector('time[aria-label="記事のレビュー日"]');
+    // Wait for the time element with the 'data-article-date' attribute to be added
+    await page.waitForSelector('time[data-article-date]');
 
     const englishDateText = await page.evaluate(() => {
       const paragraphs = Array.from(document.querySelectorAll('p'));
