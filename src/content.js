@@ -7,9 +7,9 @@
   const currentLang = languageCodeMatch ? languageCodeMatch[1] : null;
   if (!currentLang) return;
 
-  // Check if the page(https://learn.microsoft.com/ja-jp) is in Japanese
-  const lang = 'ja-jp';
-  if (!currentLang === lang) return;
+  // Check if the page(https://learn.microsoft.com/en-us) is in en-us
+  const lang = 'en-us';
+  if (currentLang === lang) return;
 
   const debug = new URLSearchParams(window.location.search).get("jp-learn-microsoft-com-update-checker-debug");
 
