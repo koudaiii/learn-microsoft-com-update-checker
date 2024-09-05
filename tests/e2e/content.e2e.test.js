@@ -28,157 +28,116 @@ describe('JP Learn Microsoft.com Update Checker E2E Test', () => {
     }
   });
 
-  test('should display English update date on Japanese Microsoft Learn page', async () => {
-    await page.goto('https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview');
+  const testCases = [
+    {
+      url: 'https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview',
+      prefersColorScheme: 'dark',
+      themeColor: 'dark',
+      expectedText: '英語版の更新日:',
+      textElementSelector: 'p.text-color-dark'
+    },
+    {
+      url: 'https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview',
+      prefersColorScheme: 'light',
+      themeColor: 'dark',
+      expectedText: '英語版の更新日:',
+      textElementSelector: 'p.text-color-dark'
+    },
+    {
+      url: 'https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview',
+      prefersColorScheme: 'dark',
+      themeColor: 'light',
+      expectedText: '英語版の更新日:',
+      textElementSelector: 'p.text-color-light'
+    },
+    {
+      url: 'https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview',
+      prefersColorScheme: 'light',
+      themeColor: 'light',
+      expectedText: '英語版の更新日:',
+      textElementSelector: 'p.text-color-light'
+    },
+    {
+      url: 'https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview',
+      prefersColorScheme: 'dark',
+      themeColor: 'high-contrast',
+      expectedText: '英語版の更新日:',
+      textElementSelector: 'p.text-color-high-contrast'
+    },
+    {
+      url: 'https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview',
+      prefersColorScheme: 'light',
+      themeColor: 'high-contrast',
+      expectedText: '英語版の更新日:',
+      textElementSelector: 'p.text-color-high-contrast'
+    },
+    {
+      url: 'https://learn.microsoft.com/zh-cn/azure/virtual-machines/overview',
+      prefersColorScheme: 'light',
+      themeColor: 'light',
+      expectedText: 'last updated on:',
+      textElementSelector: 'p.text-color-light'
+    }
+  ];
 
-    // Wait for the time element with the 'data-article-date' attribute to be added
-    await page.waitForSelector('time[data-article-date]');
+  testCases.forEach((testCase) => {
+    test(`should display English update date on ${testCase.url} with ${testCase.themeColor} theme in ${testCase.prefersColorScheme} mode`, async () => {
+      await page.goto(testCase.url);
+      await page.emulateMediaFeatures([
+        { name: "prefers-color-scheme", value: testCase.prefersColorScheme },
+      ]);
 
-    const englishDateText = await page.evaluate(() => {
-      return new Promise(resolve => setTimeout(resolve, 1000)) // Add a delay to allow time for the element to be added
-        .then(() => {
-          const paragraphs = Array.from(document.querySelectorAll('p'));
-          const targetParagraph = paragraphs.find(p => p.textContent.includes('英語版の更新日:'));
-          return targetParagraph ? targetParagraph.innerText : null;
-        });
+      // Click the button to set the theme to the desired color scheme
+      await page.evaluate((themeColor) => {
+        const themeButton = document.querySelector(`button[data-theme-to="${themeColor}"]`);
+        themeButton.click();
+      }, testCase.themeColor);
+      await page.waitForSelector('button[aria-pressed="true"]');
+
+
+      // Wait for the time element with the 'data-article-date' attribute to be added
+      await page.waitForSelector('time[data-article-date]');
+
+      const englishDateText = await page.evaluate((expectedText) => {
+        return new Promise(resolve => setTimeout(resolve, 1000)) // Add a delay to allow time for the element to be added
+          .then(() => {
+            const paragraphs = Array.from(document.querySelectorAll('p'));
+            const targetParagraph = paragraphs.find(p => p.textContent.includes(expectedText));
+            return targetParagraph ? targetParagraph.innerText : null;
+          });
+      }, testCase.expectedText);
+      expect(englishDateText).toMatch(testCase.expectedText);
+
+      await page.waitForSelector(testCase.textElementSelector);
+
+      const hasTextColorClass = await page.evaluate((textElementSelector) => {
+        const textElement = document.querySelector(textElementSelector);
+        return textElement !== null;
+      }, testCase.textElementSelector);
+      expect(hasTextColorClass).toBe(true);
     });
-    expect(englishDateText).toMatch(/英語版の更新日:/);
-  });
 
-  test('should display English update date on zh-cn Microsoft Learn page', async () => {
-    await page.goto('https://learn.microsoft.com/zh-cn/azure/virtual-machines/overview');
-    // Wait for the time element with the 'data-article-date' attribute to be added
-    await page.waitForSelector('time[data-article-date]');
+    test(`should not run script on en-us pages  with ${testCase.themeColor} theme in ${testCase.prefersColorScheme} mode`, async () => {
+      await page.goto('https://learn.microsoft.com/en-us/azure/virtual-machines/overview');
 
-    const englishDateText = await page.evaluate(() => {
-      return new Promise(resolve => setTimeout(resolve, 1000)) // Add a delay to allow time for the element to be added
-        .then(() => {
-          const paragraphs = Array.from(document.querySelectorAll('p'));
-          const targetParagraph = paragraphs.find(p => p.textContent.includes('last updated on:'));
-          return targetParagraph ? targetParagraph.innerText : null;
-        });
+       await page.emulateMediaFeatures([
+         { name: "prefers-color-scheme", value: testCase.prefersColorScheme },
+       ]);
+
+       // Click the button to set the theme to the desired color scheme
+       await page.evaluate((themeColor) => {
+         const themeButton = document.querySelector(`button[data-theme-to="${themeColor}"]`);
+         themeButton.click();
+       }, testCase.themeColor);
+
+      await page.waitForSelector('button[aria-pressed="true"]');
+
+      const hasNotTextColorClass = await page.evaluate((textElementSelector) => {
+        const textElement = document.querySelector(textElementSelector);
+        return textElement === null;
+      }, testCase.textElementSelector);
+      expect(hasNotTextColorClass).toBe(true);
     });
-    expect(englishDateText).toMatch(/last updated on:/);
-  });
-
-  test('should display light theme when button[data-theme-to]=light and button[aria-pressed]=true', async () => {
-    await page.goto('https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview');
-
-    // Click the button to set the theme to light
-    await page.evaluate(() => {
-      const themeButton = document.querySelector('button[data-theme-to="light"]');
-      themeButton.click();
-    });
-    await page.waitForSelector('button[aria-pressed="true"]');
-
-    // Wait for the paragraph element with the 'text-color-light' class to be added
-    await page.waitForSelector('p.text-color-light');
-
-    const hasTextColorClass = await page.evaluate(() => {
-      const textElement = document.querySelector('p.text-color-light');
-      return textElement !== null;
-    });
-    expect(hasTextColorClass).toBe(true);
-  });
-
-  test('should display dark theme when button[data-theme-to]=dark and button[aria-pressed]=true', async () => {
-    await page.goto('https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview');
-
-    // Click the button to set the theme to dark
-    await page.evaluate(() => {
-      const themeButton = document.querySelector('button[data-theme-to="dark"]');
-      themeButton.click();
-    });
-    await page.waitForSelector('button[aria-pressed="true"]');
-
-    // Wait for the paragraph element with the 'text-color-dark' class to be added
-    await page.waitForSelector('p.text-color-dark');
-
-    const hasTextColorClass = await page.evaluate(() => {
-      const textElement = document.querySelector('p.text-color-dark');
-      return textElement !== null;
-    });
-    expect(hasTextColorClass).toBe(true);
-  });
-
-  test('should display high-contrast theme when button[data-theme-to]=high-contrast and button[aria-pressed]=true', async () => {
-    await page.goto('https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview');
-
-    // Click the button to set the theme to high-contrast
-    await page.evaluate(() => {
-      const themeButton = document.querySelector('button[data-theme-to="high-contrast"]');
-      themeButton.click();
-    });
-    await page.waitForSelector('button[aria-pressed="true"]');
-
-    // Wait for the paragraph element with the 'text-color-high-contrast' class to be added
-    await page.waitForSelector('p.text-color-high-contrast');
-
-    const hasTextColorClass = await page.evaluate(() => {
-      const textElement = document.querySelector('p.text-color-high-contrast');
-      return textElement !== null;
-    });
-    expect(hasTextColorClass).toBe(true);
-  });
-
-  test('should not run script on en-us pages on light theme', async () => {
-    await page.goto('https://learn.microsoft.com/en-us/azure/virtual-machines/overview');
-
-    // Click the button to set the theme to light
-    await page.evaluate(() => {
-      const themeButton = document.querySelector('button[data-theme-to="light"]');
-      themeButton.click();
-    });
-    await page.waitForSelector('button[aria-pressed="true"]');
-
-    // Wait for the paragraph element with the 'text-color-light' class to be added
-    await page.waitForSelector('p.text-color-light', { hidden: true });
-
-    const hasTextColorClass = await page.evaluate(() => {
-      const textElement = document.querySelector('p.text-color-light');
-      return textElement === null;
-    });
-    expect(hasTextColorClass).toBe(true);
-  });
-
-  test('should not run script on en-us pages on dark theme', async () => {
-    await page.goto('https://learn.microsoft.com/en-us/azure/virtual-machines/overview');
-
-    // Click the button to set the theme to dark
-    await page.evaluate(() => {
-      const themeButton = document.querySelector('button[data-theme-to="dark"]');
-      themeButton.click();
-    });
-    await page.waitForSelector('button[aria-pressed="true"]');
-
-    // Wait for the paragraph element with the 'text-color-dark' class to be added
-    await page.waitForSelector('p.text-color-dark', { hidden: true });
-
-    const hasTextColorClass = await page.evaluate(() => {
-      const textElement = document.querySelector('p.text-color-dark');
-      return textElement === null;
-    });
-    expect(hasTextColorClass).toBe(true);
-  });
-
-  test('should not run script on en-us pages on high-contrast theme', async () => {
-    await page.goto('https://learn.microsoft.com/en-us/azure/virtual-machines/overview');
-
-    // Click the button to set the theme to high-contrast
-    await page.evaluate(() => {
-      const themeButton = document.querySelector('button[data-theme-to="high-contrast"]');
-      themeButton.click();
-    });
-    await page.waitForSelector('button[aria-pressed="true"]');
-
-    // Wait for the paragraph element with the 'text-color-high-contrast' class to be added
-    await page.waitForSelector('p.text-color-high-contrast', { hidden: true });
-
-    const hasTextColorClass = await page.evaluate(() => {
-      const textElement = document.querySelector('p.text-color-high-contrast');
-      return textElement === null;
-    });
-    expect(hasTextColorClass).toBe(true);
   });
 
   test('should run script with jp-learn-microsoft-com-update-checker-debug flag', async () => {
