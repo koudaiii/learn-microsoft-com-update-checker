@@ -23,9 +23,9 @@ const languageLabels = {
   const dataArticleDateElement = document.querySelector('time[data-article-date]');
   if (!dataArticleDateElement) return;
 
-  // Parse Japanese date
-  const japaneseDateStr = dataArticleDateElement.getAttribute("datetime");
-  const japaneseDate = new Date(japaneseDateStr);
+  // Parse article date
+  const articleDateStr = dataArticleDateElement.getAttribute("datetime");
+  const articleDate = new Date(articleDateStr);
 
   // Translate URL to English
   const englishUrl = currentUrl.replace(`/${currentLang}/`, "/en-us/");
@@ -61,9 +61,9 @@ const languageLabels = {
       informationIcon = "";
 
       console.log("English date:", englishDate);
-      console.log("Japanese date:", japaneseDate);
-      // Compare English date and Japanese date
-      if (englishDate > japaneseDate || debug === "true") {
+      console.log("Article date:", articleDate);
+      // Compare English date and Article date
+      if (englishDate > articleDate || debug === "true") {
         // Display alert if English page is updated
         updateInfo.className = "alert is-primary"; // <class="alert is-primary"> is defined in CSS
         updateInfo.style.margin = "5px";
