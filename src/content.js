@@ -13,19 +13,19 @@ const languageLabels = {
   const currentLang = languageCodeMatch ? languageCodeMatch[1] : null;
   if (!currentLang) return;
 
-  // Check if the page(https://learn.microsoft.com/en-us) is in en-us
+  // Check if the page(https://learn.microsoft.com/en-us) is in en-us, if so, return
   const lang = 'en-us';
   if (currentLang === lang) return;
 
   const debug = new URLSearchParams(window.location.search).get("jp-learn-microsoft-com-update-checker-debug");
 
-  // Get Japanese date element
-  const japaneseDateElement = document.querySelector('time[data-article-date]');
-  if (!japaneseDateElement) return;
+  // Get data-article-date element in current page
+  const dataArticleDateElement = document.querySelector('time[data-article-date]');
+  if (!dataArticleDateElement) return;
 
-  // Parse Japanese date
-  const japaneseDateStr = japaneseDateElement.getAttribute("datetime");
-  const japaneseDate = new Date(japaneseDateStr);
+  // Parse article date
+  const articleDateStr = dataArticleDateElement.getAttribute("datetime");
+  const articleDate = new Date(articleDateStr);
 
   // Translate URL to English
   const englishUrl = currentUrl.replace(`/${currentLang}/`, "/en-us/");
@@ -45,7 +45,7 @@ const languageLabels = {
 
     // Add update info to current page
     const updateInfo = document.createElement("p");
-    japaneseDateElement.parentElement.appendChild(updateInfo);
+    dataArticleDateElement.parentElement.appendChild(updateInfo);
 
     const updateClass = () => {
       // if theme is selected, apply appropriate text color based on theme
@@ -61,9 +61,9 @@ const languageLabels = {
       informationIcon = "";
 
       console.log("English date:", englishDate);
-      console.log("Japanese date:", japaneseDate);
-      // Compare English date and Japanese date
-      if (englishDate > japaneseDate || debug === "true") {
+      console.log("Article date:", articleDate);
+      // Compare English date and Article date
+      if (englishDate > articleDate || debug === "true") {
         // Display alert if English page is updated
         updateInfo.className = "alert is-primary"; // <class="alert is-primary"> is defined in CSS
         updateInfo.style.margin = "5px";
