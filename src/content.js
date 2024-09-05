@@ -19,12 +19,12 @@ const languageLabels = {
 
   const debug = new URLSearchParams(window.location.search).get("jp-learn-microsoft-com-update-checker-debug");
 
-  // Get Japanese date element
-  const japaneseDateElement = document.querySelector('time[data-article-date]');
-  if (!japaneseDateElement) return;
+  // Get data-article-date element in current page
+  const dataArticleDateElement = document.querySelector('time[data-article-date]');
+  if (!dataArticleDateElement) return;
 
   // Parse Japanese date
-  const japaneseDateStr = japaneseDateElement.getAttribute("datetime");
+  const japaneseDateStr = dataArticleDateElement.getAttribute("datetime");
   const japaneseDate = new Date(japaneseDateStr);
 
   // Translate URL to English
@@ -45,7 +45,7 @@ const languageLabels = {
 
     // Add update info to current page
     const updateInfo = document.createElement("p");
-    japaneseDateElement.parentElement.appendChild(updateInfo);
+    dataArticleDateElement.parentElement.appendChild(updateInfo);
 
     const updateClass = () => {
       // if theme is selected, apply appropriate text color based on theme
