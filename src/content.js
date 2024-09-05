@@ -13,7 +13,7 @@ const languageLabels = {
   const currentLang = languageCodeMatch ? languageCodeMatch[1] : null;
   if (!currentLang) return;
 
-  // Check if the page(https://learn.microsoft.com/en-us) is in en-us
+  // Check if the page(https://learn.microsoft.com/en-us) is in en-us, if so, return
   const lang = 'en-us';
   if (currentLang === lang) return;
 
