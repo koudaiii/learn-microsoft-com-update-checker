@@ -11,7 +11,7 @@ describe('JP Learn Microsoft.com Update Checker E2E Test', () => {
   beforeAll(async () => {
     const extensionPath = path.resolve(__dirname, '../../');
     browser = await puppeteer.launch({
-      headless: false,
+      headless: process.env.GITHUB_ACTIONS === 'true',
       args: [
         `--disable-extensions-except=${extensionPath}`,
         `--load-extension=${extensionPath}`,
