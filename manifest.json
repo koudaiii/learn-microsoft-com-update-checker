@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "JP Learn Microsoft.com Update Checker",
-  "version": "1.3",
+  "version": "1.4",
   "description": "Checks the English version update date on Microsoft Learn pages and compares it with the Japanese version to notify users.",
   "permissions": [],
   "icons": {
