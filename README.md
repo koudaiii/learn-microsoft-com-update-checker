@@ -20,7 +20,13 @@ This Chrome extension is specifically designed to check and display the latest u
 
 ## Features
 
+- current page last updated on date \> "en-us" page last updated on date
+
 ![](img/demo.png)
+
+- current page last updated on date \< "en-us" page last updated on date
+
+![](img/demo2.png)
 
 - Automatically fetches the latest update date from the corresponding English version (`en-us`) of the Microsoft Learn page.
 - Displays the English version's update date directly below the Japanese version's update date.
