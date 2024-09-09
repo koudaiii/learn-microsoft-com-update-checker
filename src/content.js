@@ -1,7 +1,10 @@
 // languageLabels is a dictionary that maps message from language codes to the corresponding language
+// Default languageLabels is 'last updated on'
+// Add more languageLabels as needed
 const languageLabels = {
   'ja-jp': '英語版の更新日',
   // Add more language labels as needed
+  // ex. 'fr-fr': 'Dernière mise à jour le',
 };
 
 (async () => {
