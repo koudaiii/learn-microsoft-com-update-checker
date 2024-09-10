@@ -6,7 +6,7 @@ const path = require('path');
 const { time } = require('console');
 const timezones = ['Asia/Tokyo', 'America/New_York', 'Europe/London']; // Add more timezones as needed
 
-describe('JP Learn Microsoft.com Update Checker E2E Test', () => {
+describe('learn.microsoft.com Update Checker E2E Test', () => {
   let browser;
   let page;
 
