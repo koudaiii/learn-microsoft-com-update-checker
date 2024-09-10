@@ -3,8 +3,10 @@
  */
 const puppeteer = require('puppeteer');
 const path = require('path');
+const { time } = require('console');
+const timezones = ['Asia/Tokyo', 'America/New_York', 'Europe/London']; // Add more timezones as needed
 
-describe('JP Learn Microsoft.com Update Checker E2E Test', () => {
+describe('learn.microsoft.com Update Checker E2E Test', () => {
   let browser;
   let page;
 
@@ -80,77 +82,85 @@ describe('JP Learn Microsoft.com Update Checker E2E Test', () => {
     }
   ];
 
-  testCases.forEach((testCase) => {
-    test(`should display English update date on ${testCase.url} with ${testCase.themeColor} theme in ${testCase.prefersColorScheme} mode`, async () => {
-      await page.goto(testCase.url);
-      await page.emulateMediaFeatures([
-        { name: "prefers-color-scheme", value: testCase.prefersColorScheme },
-      ]);
+  for (const timezone of timezones) {
+    testCases.forEach((testCase) => {
+      test(`should display English update date on ${testCase.url} with ${testCase.themeColor} theme in ${testCase.prefersColorScheme} mode`, async () => {
+        await page.goto(testCase.url);
+        await page.emulateMediaFeatures([
+          { name: "prefers-color-scheme", value: testCase.prefersColorScheme },
+        ]);
+        await page.emulateTimezone(timezone);
+        console.log("timezone:", timezone);
 
-      // Click the button to set the theme to the desired color scheme
-      await page.evaluate((themeColor) => {
-        const themeButton = document.querySelector(`button[data-theme-to="${themeColor}"]`);
-        themeButton.click();
-      }, testCase.themeColor);
-      await page.waitForSelector('button[aria-pressed="true"]');
+        // Click the button to set the theme to the desired color scheme
+        await page.evaluate((themeColor) => {
+          const themeButton = document.querySelector(`button[data-theme-to="${themeColor}"]`);
+          themeButton.click();
+        }, testCase.themeColor);
+        await page.waitForSelector('button[aria-pressed="true"]');
 
 
-      // Wait for the time element with the 'data-article-date' attribute to be added
-      await page.waitForSelector('time[data-article-date]');
+        // Wait for the time element with the 'data-article-date' attribute to be added
+        await page.waitForSelector('time[data-article-date]');
 
-      const englishDateText = await page.evaluate((expectedText) => {
-        return new Promise(resolve => setTimeout(resolve, 1000)) // Add a delay to allow time for the element to be added
-          .then(() => {
-            const paragraphs = Array.from(document.querySelectorAll('p'));
-            const targetParagraph = paragraphs.find(p => p.textContent.includes(expectedText));
-            return targetParagraph ? targetParagraph.innerText : null;
-          });
-      }, testCase.expectedText);
-      expect(englishDateText).toMatch(testCase.expectedText);
+        const englishDateText = await page.evaluate((expectedText) => {
+          return new Promise(resolve => setTimeout(resolve, 1000)) // Add a delay to allow time for the element to be added
+            .then(() => {
+              const paragraphs = Array.from(document.querySelectorAll('p'));
+              const targetParagraph = paragraphs.find(p => p.textContent.includes(expectedText));
+              return targetParagraph ? targetParagraph.innerText : null;
+            });
+        }, testCase.expectedText);
+        expect(englishDateText).toMatch(testCase.expectedText);
 
-      await page.waitForSelector(testCase.textElementSelector);
+        await page.waitForSelector(testCase.textElementSelector);
 
-      const hasTextColorClass = await page.evaluate((textElementSelector) => {
-        const textElement = document.querySelector(textElementSelector);
-        return textElement !== null;
-      }, testCase.textElementSelector);
-      expect(hasTextColorClass).toBe(true);
+        const hasTextColorClass = await page.evaluate((textElementSelector) => {
+          const textElement = document.querySelector(textElementSelector);
+          return textElement !== null;
+        }, testCase.textElementSelector);
+        expect(hasTextColorClass).toBe(true);
+      });
+
+      test(`should not run script on en-us pages  with ${testCase.themeColor} theme in ${testCase.prefersColorScheme} mode`, async () => {
+        await page.goto('https://learn.microsoft.com/en-us/azure/virtual-machines/overview');
+
+        await page.emulateMediaFeatures([
+          { name: "prefers-color-scheme", value: testCase.prefersColorScheme },
+        ]);
+        await page.emulateTimezone(timezone);
+        console.log("timezone:", timezone);
+
+        // Click the button to set the theme to the desired color scheme
+        await page.evaluate((themeColor) => {
+          const themeButton = document.querySelector(`button[data-theme-to="${themeColor}"]`);
+          themeButton.click();
+        }, testCase.themeColor);
+
+        await page.waitForSelector('button[aria-pressed="true"]');
+
+        const hasNotTextColorClass = await page.evaluate((textElementSelector) => {
+          const textElement = document.querySelector(textElementSelector);
+          return textElement === null;
+        }, testCase.textElementSelector);
+        expect(hasNotTextColorClass).toBe(true);
+      });
     });
 
-    test(`should not run script on en-us pages  with ${testCase.themeColor} theme in ${testCase.prefersColorScheme} mode`, async () => {
-      await page.goto('https://learn.microsoft.com/en-us/azure/virtual-machines/overview');
+    test('should run script with jp-learn-microsoft-com-update-checker-debug flag', async () => {
+      await page.goto('https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview?jp-learn-microsoft-com-update-checker-debug=true');
+      await page.emulateTimezone(timezone);
+      console.log("timezone:", timezone);
 
-       await page.emulateMediaFeatures([
-         { name: "prefers-color-scheme", value: testCase.prefersColorScheme },
-       ]);
+      // Wait for the paragraph element with the 'alert' class to be added
+      await page.waitForSelector('p.alert');
 
-       // Click the button to set the theme to the desired color scheme
-       await page.evaluate((themeColor) => {
-         const themeButton = document.querySelector(`button[data-theme-to="${themeColor}"]`);
-         themeButton.click();
-       }, testCase.themeColor);
-
-      await page.waitForSelector('button[aria-pressed="true"]');
-
-      const hasNotTextColorClass = await page.evaluate((textElementSelector) => {
-        const textElement = document.querySelector(textElementSelector);
-        return textElement === null;
-      }, testCase.textElementSelector);
-      expect(hasNotTextColorClass).toBe(true);
+      // alert is-primary class is added to the paragraph element
+      const hasAlertIsPrimaryClass = await page.evaluate(() => {
+        const updateInfoElement = document.querySelector('p.alert');
+        return updateInfoElement ? updateInfoElement.classList.contains('is-primary') : false;
+      });
+      expect(hasAlertIsPrimaryClass).toBe(true);
     });
-  });
-
-  test('should run script with jp-learn-microsoft-com-update-checker-debug flag', async () => {
-    await page.goto('https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview?jp-learn-microsoft-com-update-checker-debug=true');
-
-    // Wait for the paragraph element with the 'alert' class to be added
-    await page.waitForSelector('p.alert');
-
-    // alert is-primary class is added to the paragraph element
-    const hasAlertIsPrimaryClass = await page.evaluate(() => {
-      const updateInfoElement = document.querySelector('p.alert');
-      return updateInfoElement ? updateInfoElement.classList.contains('is-primary') : false;
-    });
-    expect(hasAlertIsPrimaryClass).toBe(true);
-  });
+  };
 });
