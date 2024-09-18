@@ -61,6 +61,38 @@ const timeAgoLabels = {
     const englishDate = new Date(englishDateStr);
 
     // Add update info to current page
+    // Calculate the difference in time between the current date and the English update date
+    const currentDate = new Date();
+    const timeDifference = currentDate - englishDate;
+
+    // Create a new paragraph element to display the update information
+    let timeAgo;
+    const years = Math.floor(timeDifference / (1000 * 60 * 60 * 24 * 365));
+    const days = Math.floor((timeDifference % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
+    const labels = timeAgoLabels[currentLang] || {
+      years: 'years ago',
+      days: 'days ago',
+      hours: 'hours ago',
+      minutes: 'minutes ago',
+      justNow: 'just now'
+    };
+
+      if (years > 0) {
+        timeAgo = ` ${years} ${labels.years}`;
+      } else if (days > 0) {
+        timeAgo = ` ${days} ${labels.days}`;
+      } else if (hours > 0) {
+        timeAgo = ` ${hours} ${labels.hours}`;
+      } else if (minutes > 0) {
+        timeAgo = ` ${minutes} ${labels.minutes}`;
+      } else {
+        timeAgo = labels.justNow;
+      }
+    let timeAgoStr = ` (${timeAgo})`;
+
     const updateInfo = document.createElement("p");
     dataArticleDateElement.parentElement.appendChild(updateInfo);
 
@@ -79,6 +111,8 @@ const timeAgoLabels = {
 
       console.log("English date:", englishDate);
       console.log("Article date:", articleDate);
+      console.log("timeAgoStr:", timeAgoStr);
+
       // Compare English date and Article date
       if (englishDate > articleDate || debug === "true") {
         // Display alert if English page is updated
