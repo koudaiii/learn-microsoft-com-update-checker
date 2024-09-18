@@ -120,6 +120,21 @@ describe('learn.microsoft.com Update Checker E2E Test', () => {
           return textElement !== null;
         }, testCase.textElementSelector);
         expect(hasTextColorClass).toBe(true);
+
+        // get text content. e.g. '2023/12/21 英語版の更新日: 2023/12/21 (271日前に更新)'
+        const textContentStr = await page.evaluate(() => {
+          const visibilityHiddenVisualDiffElement = document.querySelector('li.visibility-hidden-visual-diff');
+          return visibilityHiddenVisualDiffElement ? visibilityHiddenVisualDiffElement.innerText : null;
+        });
+        console.log("textContentStr:", textContentStr);
+
+        let defaultUpdatePattern = /(years|days|hours|minutes) ago|(just now)/;
+        if (testCase.url.includes('ja-jp')) {
+          defaultUpdatePattern = /(年|日|時間|分)前に更新|(今更新されたばかり)/;
+        }
+        let match = textContentStr.match(defaultUpdatePattern);
+        console.log("match:", match);
+        expect(!!match).toBe(true);
       });
 
       test(`should not run script on en-us pages  with ${testCase.themeColor} theme in ${testCase.prefersColorScheme} mode`, async () => {

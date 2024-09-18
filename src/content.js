@@ -131,7 +131,7 @@ const timeAgoLabels = {
       const languageLabel = languageLabels[currentLang] || 'last updated on';
 
       // Display update info
-      updateInfo.innerHTML = informationIcon + `${languageLabel}: <a href="${englishUrl}" target="_blank" class="${textColorClass}">${englishDate.toLocaleDateString(currentLang)}</a>`;
+      updateInfo.innerHTML = informationIcon + `${languageLabel}: <a href="${englishUrl}" target="_blank" class="${textColorClass}">${englishDate.toLocaleDateString(currentLang)}${timeAgoStr}</a>`;
     }
     updateClass();
     const observer = new MutationObserver(updateClass);
