@@ -6,6 +6,21 @@ const languageLabels = {
   // Add more language labels as needed. For example: 'fr-fr': 'Dernière mise à jour le',
 };
 
+// timeAgoLabels is a dictionary that maps message from language codes to the corresponding language
+// Default timeAgoLabels is 'years ago', 'days ago', 'hours ago', 'minutes ago', 'just now'
+// Add more timeAgoLabels as needed
+const timeAgoLabels = {
+  'ja-jp': {
+  years: '年前に更新',
+  days: '日前に更新',
+  hours: '時間前に更新',
+  minutes: '分前に更新',
+  justNow: '今更新されたばかり',
+  },
+  // Add more language labels as needed. For example:
+  // 'fr-fr': { years: 'il y a ans', days: 'il y a jours', hours: 'il y a heures', minutes: 'il y a minutes', justNow: 'à l\'instant' },
+};
+
 (async () => {
   // Get current URL
   const currentUrl = window.location.href;
