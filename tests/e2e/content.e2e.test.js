@@ -83,14 +83,15 @@ describe('learn.microsoft.com Update Checker E2E Test', () => {
   ];
 
   for (const timezone of timezones) {
+    console.log("timezone:", timezone);
     testCases.forEach((testCase) => {
+      console.log("testCase:", testCase);
       test(`should display English update date on ${testCase.url} with ${testCase.themeColor} theme in ${testCase.prefersColorScheme} mode`, async () => {
         await page.goto(testCase.url);
         await page.emulateMediaFeatures([
           { name: "prefers-color-scheme", value: testCase.prefersColorScheme },
         ]);
         await page.emulateTimezone(timezone);
-        console.log("timezone:", timezone);
 
         // Click the button to set the theme to the desired color scheme
         await page.evaluate((themeColor) => {
@@ -98,7 +99,6 @@ describe('learn.microsoft.com Update Checker E2E Test', () => {
           themeButton.click();
         }, testCase.themeColor);
         await page.waitForSelector('button[aria-pressed="true"]');
-
 
         // Wait for the time element with the 'data-article-date' attribute to be added
         await page.waitForSelector('time[data-article-date]');
@@ -129,7 +129,6 @@ describe('learn.microsoft.com Update Checker E2E Test', () => {
           { name: "prefers-color-scheme", value: testCase.prefersColorScheme },
         ]);
         await page.emulateTimezone(timezone);
-        console.log("timezone:", timezone);
 
         // Click the button to set the theme to the desired color scheme
         await page.evaluate((themeColor) => {
@@ -150,7 +149,6 @@ describe('learn.microsoft.com Update Checker E2E Test', () => {
     test('should run script with jp-learn-microsoft-com-update-checker-debug flag', async () => {
       await page.goto('https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview?jp-learn-microsoft-com-update-checker-debug=true');
       await page.emulateTimezone(timezone);
-      console.log("timezone:", timezone);
 
       // Wait for the paragraph element with the 'alert' class to be added
       await page.waitForSelector('p.alert');
