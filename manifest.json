@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "learn.microsoft.com Update Checker",
-  "version": "1.5",
+  "version": "1.6",
   "description": "Displays the 'en-us' update date of Microsoft Learn pages and highlights it if the current language version is outdated.",
   "permissions": [],
   "icons": {
