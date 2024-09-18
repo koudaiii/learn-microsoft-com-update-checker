@@ -83,14 +83,15 @@ describe('learn.microsoft.com Update Checker E2E Test', () => {
   ];
 
   for (const timezone of timezones) {
+    console.log("timezone:", timezone);
     testCases.forEach((testCase) => {
+      console.log("testCase:", testCase);
       test(`should display English update date on ${testCase.url} with ${testCase.themeColor} theme in ${testCase.prefersColorScheme} mode`, async () => {
         await page.goto(testCase.url);
         await page.emulateMediaFeatures([
           { name: "prefers-color-scheme", value: testCase.prefersColorScheme },
         ]);
         await page.emulateTimezone(timezone);
-        console.log("timezone:", timezone);
 
         // Click the button to set the theme to the desired color scheme
         await page.evaluate((themeColor) => {
@@ -98,7 +99,6 @@ describe('learn.microsoft.com Update Checker E2E Test', () => {
           themeButton.click();
         }, testCase.themeColor);
         await page.waitForSelector('button[aria-pressed="true"]');
-
 
         // Wait for the time element with the 'data-article-date' attribute to be added
         await page.waitForSelector('time[data-article-date]');
@@ -120,6 +120,21 @@ describe('learn.microsoft.com Update Checker E2E Test', () => {
           return textElement !== null;
         }, testCase.textElementSelector);
         expect(hasTextColorClass).toBe(true);
+
+        // get text content. e.g. '2023/12/21 英語版の更新日: 2023/12/21 (271日前に更新)'
+        const textContentStr = await page.evaluate(() => {
+          const visibilityHiddenVisualDiffElement = document.querySelector('li.visibility-hidden-visual-diff');
+          return visibilityHiddenVisualDiffElement ? visibilityHiddenVisualDiffElement.innerText : null;
+        });
+        console.log("textContentStr:", textContentStr);
+
+        let defaultUpdatePattern = /(years|days|hours|minutes) ago|(just now)/;
+        if (testCase.url.includes('ja-jp')) {
+          defaultUpdatePattern = /(年|日|時間|分)前に更新|(今更新されたばかり)/;
+        }
+        let match = textContentStr.match(defaultUpdatePattern);
+        console.log("match:", match);
+        expect(!!match).toBe(true);
       });
 
       test(`should not run script on en-us pages  with ${testCase.themeColor} theme in ${testCase.prefersColorScheme} mode`, async () => {
@@ -129,7 +144,6 @@ describe('learn.microsoft.com Update Checker E2E Test', () => {
           { name: "prefers-color-scheme", value: testCase.prefersColorScheme },
         ]);
         await page.emulateTimezone(timezone);
-        console.log("timezone:", timezone);
 
         // Click the button to set the theme to the desired color scheme
         await page.evaluate((themeColor) => {
@@ -150,7 +164,6 @@ describe('learn.microsoft.com Update Checker E2E Test', () => {
     test('should run script with jp-learn-microsoft-com-update-checker-debug flag', async () => {
       await page.goto('https://learn.microsoft.com/ja-jp/azure/virtual-machines/overview?jp-learn-microsoft-com-update-checker-debug=true');
       await page.emulateTimezone(timezone);
-      console.log("timezone:", timezone);
 
       // Wait for the paragraph element with the 'alert' class to be added
       await page.waitForSelector('p.alert');
