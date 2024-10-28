@@ -1,6 +1,9 @@
 # learn\.microsoft\.com Update Checker
 
-This Chrome extension displays the 'en-us' version update date of Microsoft Learn pages(`https://learn.microsoft.com/`). It compares the English version with the current language version and highlights the date if the current version is outdated.
+Displays the 'en-us' version update date of Microsoft Learn pages(`https://learn.microsoft.com/`). It compares the English version with the current language version and highlights the date if the current version is outdated.
+
+- Microsoft Edge Addons: https://microsoftedge.microsoft.com/addons/detail/learnmicrosoftcom-updat/nnigammickcgljioobbnjlfhhkejnpce
+- Chrome extension: https://chromewebstore.google.com/detail/learnmicrosoftcom-update/addjjinolilbffnlnfbaglljhngjminl
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
