@@ -36,8 +36,8 @@ const timeAgoLabels = {
 
   const debug = new URLSearchParams(window.location.search).get("jp-learn-microsoft-com-update-checker-debug");
 
-  // Get data-article-date element in current page
-  const dataArticleDateElement = document.querySelector('time[data-article-date]');
+  // Get local-time tag in current page
+  const dataArticleDateElement = document.querySelector('local-time');
   if (!dataArticleDateElement) return;
 
   // Parse article date
@@ -56,7 +56,7 @@ const timeAgoLabels = {
     const parser = new DOMParser();
     const doc = parser.parseFromString(data, "text/html");
 
-    const englishDateStr = doc.querySelector('time[data-article-date]')?.getAttribute("datetime");
+    const englishDateStr = doc.querySelector('local-time')?.getAttribute("datetime");
     if (!englishDateStr) return;
     const englishDate = new Date(englishDateStr);
 
