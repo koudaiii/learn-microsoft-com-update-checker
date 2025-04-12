@@ -100,8 +100,8 @@ describe('learn.microsoft.com Update Checker E2E Test', () => {
         }, testCase.themeColor);
         await page.waitForSelector('button[aria-pressed="true"]');
 
-        // Wait for the time element with the 'data-article-date' attribute to be added
-        await page.waitForSelector('time[data-article-date]');
+        // Wait for the time element with the 'local-time' attribute to be added
+        await page.waitForSelector('local-time');
 
         const englishDateText = await page.evaluate((expectedText) => {
           return new Promise(resolve => setTimeout(resolve, 1000)) // Add a delay to allow time for the element to be added
