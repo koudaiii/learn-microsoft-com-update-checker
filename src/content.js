@@ -1,3 +1,40 @@
+// Configuration constants
+const CONFIG = {
+  DEFAULT_LANGUAGE: 'en-us',
+  DOMAIN: 'learn.microsoft.com',
+  URL_PATTERN: /https:\/\/learn\.microsoft\.com\/([^\/]+)\//,
+  DEBUG_PARAM: 'jp-learn-microsoft-com-update-checker-debug',
+  SELECTORS: {
+    DATE_ELEMENT: 'local-time',
+    THEME_BUTTON: 'button[data-theme-to][aria-pressed="true"]',
+  },
+  STYLES: {
+    ALERT: {
+      margin: '5px',
+      padding: '10px',
+    },
+    INFO: {
+      marginTop: '0',
+      marginLeft: '3px',
+    },
+  },
+  CLASSES: {
+    ALERT: 'alert is-primary',
+    THEMES: {
+      dark: 'text-color-dark',
+      'high-contrast': 'text-color-high-contrast',
+      light: 'text-color-light',
+      default: 'text-color',
+    },
+  },
+  TIME_CONSTANTS: {
+    MILLISECONDS_IN_MINUTE: 1000 * 60,
+    MILLISECONDS_IN_HOUR: 1000 * 60 * 60,
+    MILLISECONDS_IN_DAY: 1000 * 60 * 60 * 24,
+    MILLISECONDS_IN_YEAR: 1000 * 60 * 60 * 24 * 365,
+  },
+};
+
 // languageLabels is a dictionary that maps message from language codes to the corresponding language
 // Default languageLabels is 'last updated on'
 // Add more languageLabels as needed
