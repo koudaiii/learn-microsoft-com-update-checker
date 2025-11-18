@@ -58,23 +58,70 @@ const timeAgoLabels = {
   // 'fr-fr': { years: 'il y a ans', days: 'il y a jours', hours: 'il y a heures', minutes: 'il y a minutes', justNow: 'à l\'instant' },
 };
 
+// Helper functions
+const getLanguageFromUrl = (url) => {
+  const match = url.match(CONFIG.URL_PATTERN);
+  return match ? match[1] : null;
+};
+
+const getEnglishUrl = (url, currentLang) => {
+  return url.replace(`/${currentLang}/`, `/${CONFIG.DEFAULT_LANGUAGE}/`);
+};
+
+const calculateTimeAgo = (timeDifference, currentLang) => {
+  const { MILLISECONDS_IN_YEAR, MILLISECONDS_IN_DAY, MILLISECONDS_IN_HOUR, MILLISECONDS_IN_MINUTE } = CONFIG.TIME_CONSTANTS;
+
+  const years = Math.floor(timeDifference / MILLISECONDS_IN_YEAR);
+  const days = Math.floor((timeDifference % MILLISECONDS_IN_YEAR) / MILLISECONDS_IN_DAY);
+  const hours = Math.floor((timeDifference % MILLISECONDS_IN_DAY) / MILLISECONDS_IN_HOUR);
+  const minutes = Math.floor((timeDifference % MILLISECONDS_IN_HOUR) / MILLISECONDS_IN_MINUTE);
+
+  const labels = timeAgoLabels[currentLang] || {
+    years: 'years ago',
+    days: 'days ago',
+    hours: 'hours ago',
+    minutes: 'minutes ago',
+    justNow: 'just now'
+  };
+
+  if (years > 0) {
+    return ` ${years} ${labels.years}`;
+  } else if (days > 0) {
+    return ` ${days} ${labels.days}`;
+  } else if (hours > 0) {
+    return ` ${hours} ${labels.hours}`;
+  } else if (minutes > 0) {
+    return ` ${minutes} ${labels.minutes}`;
+  } else {
+    return labels.justNow;
+  }
+};
+
+const getTextColorClass = (theme) => {
+  return CONFIG.CLASSES.THEMES[theme] || CONFIG.CLASSES.THEMES.default;
+};
+
+const applyStyles = (element, styles) => {
+  Object.entries(styles).forEach(([key, value]) => {
+    element.style[key] = value;
+  });
+};
+
 (async () => {
   // Get current URL
   const currentUrl = window.location.href;
 
   // Use a regular expression to extract the language code
-  const languageCodeMatch = currentUrl.match(/https:\/\/learn\.microsoft\.com\/([^\/]+)\//);
-  const currentLang = languageCodeMatch ? languageCodeMatch[1] : null;
+  const currentLang = getLanguageFromUrl(currentUrl);
   if (!currentLang) return;
 
   // Check if the page(https://learn.microsoft.com/en-us) is in en-us, if so, return
-  const lang = 'en-us';
-  if (currentLang === lang) return;
+  if (currentLang === CONFIG.DEFAULT_LANGUAGE) return;
 
-  const debug = new URLSearchParams(window.location.search).get("jp-learn-microsoft-com-update-checker-debug");
+  const debug = new URLSearchParams(window.location.search).get(CONFIG.DEBUG_PARAM);
 
   // Get local-time tag in current page
-  const dataArticleDateElement = document.querySelector('local-time');
+  const dataArticleDateElement = document.querySelector(CONFIG.SELECTORS.DATE_ELEMENT);
   if (!dataArticleDateElement) return;
 
   // Parse article date
@@ -82,7 +129,7 @@ const timeAgoLabels = {
   const articleDate = new Date(articleDateStr);
 
   // Translate URL to English
-  const englishUrl = currentUrl.replace(`/${currentLang}/`, "/en-us/");
+  const englishUrl = getEnglishUrl(currentUrl, currentLang);
 
   try {
     // Get English page and parse update date
@@ -93,7 +140,7 @@ const timeAgoLabels = {
     const parser = new DOMParser();
     const doc = parser.parseFromString(data, "text/html");
 
-    const englishDateStr = doc.querySelector('local-time')?.getAttribute("datetime");
+    const englishDateStr = doc.querySelector(CONFIG.SELECTORS.DATE_ELEMENT)?.getAttribute("datetime");
     if (!englishDateStr) return;
     const englishDate = new Date(englishDateStr);
 
@@ -103,48 +150,21 @@ const timeAgoLabels = {
     const timeDifference = currentDate - englishDate;
 
     // Create a new paragraph element to display the update information
-    let timeAgo;
-    const years = Math.floor(timeDifference / (1000 * 60 * 60 * 24 * 365));
-    const days = Math.floor((timeDifference % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
-
-    const labels = timeAgoLabels[currentLang] || {
-      years: 'years ago',
-      days: 'days ago',
-      hours: 'hours ago',
-      minutes: 'minutes ago',
-      justNow: 'just now'
-    };
-
-      if (years > 0) {
-        timeAgo = ` ${years} ${labels.years}`;
-      } else if (days > 0) {
-        timeAgo = ` ${days} ${labels.days}`;
-      } else if (hours > 0) {
-        timeAgo = ` ${hours} ${labels.hours}`;
-      } else if (minutes > 0) {
-        timeAgo = ` ${minutes} ${labels.minutes}`;
-      } else {
-        timeAgo = labels.justNow;
-      }
-    let timeAgoStr = ` (${timeAgo})`;
+    const timeAgo = calculateTimeAgo(timeDifference, currentLang);
+    const timeAgoStr = ` (${timeAgo})`;
 
     const updateInfo = document.createElement("p");
     dataArticleDateElement.parentElement.appendChild(updateInfo);
 
     const updateClass = () => {
       // if theme is selected, apply appropriate text color based on theme
-      const textColorClass = ((theme) => {
-        if (theme === "dark") return "text-color-dark";
-        if (theme === "high-contrast") return "text-color-high-contrast";
-        if (theme === "light") return "text-color-light";
-        return "text-color";
-      })(document.querySelector('button[data-theme-to][aria-pressed="true"]').getAttribute("data-theme-to"));
+      const themeButton = document.querySelector(CONFIG.SELECTORS.THEME_BUTTON);
+      const theme = themeButton.getAttribute("data-theme-to");
+      const textColorClass = getTextColorClass(theme);
       console.log("textColorClass:", textColorClass);
 
       // Add icon to update info
-      informationIcon = "";
+      let informationIcon = "";
 
       console.log("English date:", englishDate);
       console.log("Article date:", articleDate);
@@ -153,14 +173,12 @@ const timeAgoLabels = {
       // Compare English date and Article date
       if (englishDate > articleDate || debug === "true") {
         // Display alert if English page is updated
-        updateInfo.className = "alert is-primary"; // <class="alert is-primary"> is defined in CSS
-        updateInfo.style.margin = "5px";
-        updateInfo.style.padding = "10px";
+        updateInfo.className = CONFIG.CLASSES.ALERT;
+        applyStyles(updateInfo, CONFIG.STYLES.ALERT);
         informationIcon = `<span class="icon"><span class="docon docon-status-error-outline" aria-hidden="true" style="margin: 0px"></span></span>`;
       } else {
         // Display info if English page is not updated
-        updateInfo.style.marginTop = "0"; // <p> default margin-top is 1rem
-        updateInfo.style.marginLeft = "3px"; // <p> default margin-left is 0
+        applyStyles(updateInfo, CONFIG.STYLES.INFO);
         updateInfo.className = textColorClass; // Apply appropriate text color based on theme
       }
 
@@ -172,7 +190,7 @@ const timeAgoLabels = {
     }
     updateClass();
     const observer = new MutationObserver(updateClass);
-    observer.observe(document.querySelector('button[data-theme-to][aria-pressed="true"]'), { attributes: true });
+    observer.observe(document.querySelector(CONFIG.SELECTORS.THEME_BUTTON), { attributes: true });
   } catch (error) {
     console.error("Error fetching English page:", error);
   }
