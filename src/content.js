@@ -180,6 +180,11 @@ const applyStyles = (element, styles) => {
       }
 
       articleMetadata.insertAdjacentElement('afterend', customContainer);
+
+      // Add hr element below custom container
+      const hr = document.createElement('hr');
+      hr.className = 'hr';
+      customContainer.insertAdjacentElement('afterend', hr);
     } else if (customContainer) {
       updateInfo = customContainer.querySelector('li.visibility-hidden-visual-diff p');
     }

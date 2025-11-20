@@ -98,6 +98,91 @@ npm run test:unit
 npm run test:e2e
 ```
 
+## Architecture
+
+### DOM Structure and Element Cloning
+
+This extension displays English version update information by cloning the existing `article-metadata-footer` element on Microsoft Learn pages.
+
+#### HTML Structure
+
+The Microsoft Learn page has the following structure:
+
+```html
+<div data-main-column="">
+  <div>
+    <!-- Page header with breadcrumbs and actions -->
+    <div id="article-header">...</div>
+
+    <!-- Article title -->
+    <div class="content"><h1>Title</h1></div>
+
+    <!-- Top metadata (existing) -->
+    <div id="article-metadata">
+      <div id="user-feedback">...</div>
+    </div>
+
+    <!-- Our custom cloned element (inserted here - after article-metadata) -->
+    <div id="custom-header-from-article-metadata-footer">
+      <hr class="hr">
+      <ul class="metadata page-metadata" lang="ja-jp">
+        <li>
+          <span class="badge">Last updated on 2025/10/08</span>
+          <p>英語版の更新日: <a href="...">2025/4/10 (224 日前に更新)</a></p>
+        </li>
+      </ul>
+    </div>
+
+    <hr class="hr">
+
+    <!-- Article content -->
+    <div class="content">...</div>
+
+    <!-- Feedback section and other components -->
+
+    <!-- Bottom metadata (clone source) -->
+    <div id="article-metadata-footer">
+      <hr class="hr">
+      <ul class="metadata page-metadata">
+        <li>
+          <span class="badge">Last updated on 2025/10/08</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+```
+
+#### Cloning Strategy
+
+The extension uses the following approach:
+
+1. **Clone Source**: `article-metadata-footer` element (bottom of the page)
+   - This element contains the page's metadata structure with proper styling
+
+2. **Clone Process**:
+   ```javascript
+   customContainer = articleMetadataFooter.cloneNode(true);
+   customContainer.id = 'custom-header-from-article-metadata-footer';
+   ```
+
+3. **Insertion Point**: Inserted immediately after `article-metadata` (top of the page)
+   ```javascript
+   articleMetadata.insertAdjacentElement('afterend', customContainer);
+   ```
+
+4. **Customization**:
+   - Update the `lang` attribute to match the current page language
+   - Add a new `<p>` element containing the English version update information
+   - Apply appropriate styling based on whether the English version is newer
+
+#### Why This Approach?
+
+- **Consistency**: By cloning the existing metadata footer, we inherit all the proper CSS classes and structure
+- **Maintainability**: If Microsoft changes the metadata structure, our extension adapts automatically
+- **Visibility**: Placing the update information near the top of the page ensures users see it immediately
+- **Clone-based**: We clone from `article-metadata-footer` at the bottom but display at the top for better UX
+
 ## Contribution
 
 Contributions are welcome! Follow these steps to contribute:
