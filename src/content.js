@@ -153,8 +153,47 @@ const applyStyles = (element, styles) => {
     const timeAgo = calculateTimeAgo(timeDifference, currentLang);
     const timeAgoStr = ` (${timeAgo})`;
 
-    const updateInfo = document.createElement("p");
-    dataArticleDateElement.parentElement.appendChild(updateInfo);
+    // Clone article-metadata-footer and create custom-header-from-article-metadata-footer
+    let customContainer = document.getElementById('custom-header-from-article-metadata-footer');
+    const articleMetadata = document.getElementById('article-metadata');
+    const articleMetadataFooter = document.getElementById('article-metadata-footer');
+
+    let updateInfo;
+    if (!customContainer && articleMetadata && articleMetadataFooter) {
+      customContainer = articleMetadataFooter.cloneNode(true);
+      customContainer.id = 'custom-header-from-article-metadata-footer';
+      customContainer.setAttribute('data-bi-name', 'custom-header-from-article-metadata-footer');
+      customContainer.setAttribute('data-test-id', 'custom-header-from-article-metadata-footer');
+      customContainer.className = 'custom-page-metadata-container';
+
+      // Update lang attribute
+      const ul = customContainer.querySelector('ul.metadata.page-metadata');
+      if (ul) {
+        ul.setAttribute('lang', currentLang);
+      }
+
+      // Add p tag after span.badge in li
+      const li = customContainer.querySelector('li.visibility-hidden-visual-diff');
+      if (li) {
+        updateInfo = document.createElement('p');
+        li.appendChild(updateInfo);
+      }
+
+      articleMetadata.insertAdjacentElement('afterend', customContainer);
+
+      // Add hr element below custom container
+      const hr = document.createElement('hr');
+      hr.className = 'hr';
+      customContainer.insertAdjacentElement('afterend', hr);
+    } else if (customContainer) {
+      updateInfo = customContainer.querySelector('li.visibility-hidden-visual-diff p');
+    }
+
+    // Fallback: if custom container doesn't exist, use original implementation
+    if (!updateInfo) {
+      updateInfo = document.createElement("p");
+      dataArticleDateElement.parentElement.appendChild(updateInfo);
+    }
 
     const updateClass = () => {
       // if theme is selected, apply appropriate text color based on theme

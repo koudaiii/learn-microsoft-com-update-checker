@@ -90,3 +90,58 @@ describe('URL Check in Content Script', () => {
     expect(match).toBeNull();
   });
 });
+
+describe('DOM manipulation in content script', () => {
+  beforeEach(() => {
+    // Set up the DOM
+    document.body.innerHTML = `
+      <div id="article-metadata">
+        <local-time datetime="2025-10-08T00:00:00.000Z"></local-time>
+      </div>
+      <div id="article-metadata-footer">
+        <ul class="metadata page-metadata">
+          <li class="visibility-hidden-visual-diff">
+            <span class="badge">Last updated on 2025/10/08</span>
+          </li>
+        </ul>
+      </div>
+      <button data-theme-to="light" aria-pressed="true"></button>
+    `;
+
+    // Mock window.location.href
+    Object.defineProperty(window, 'location', {
+      value: {
+        href: 'https://learn.microsoft.com/ja-jp/test',
+      },
+      writable: true
+    });
+
+    // Mock fetch
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        text: () => Promise.resolve('<html><body><local-time datetime="2025-11-26T00:00:00.000Z"></local-time></body></html>'),
+      })
+    );
+  });
+
+  test('should create and insert the custom header', async () => {
+    // Run the content script
+    require('../../src/content.js');
+
+    // Wait for the async operations to complete
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    // Check if the custom header was created
+    const customHeader = document.getElementById('custom-header-from-article-metadata-footer');
+    expect(customHeader).not.toBeNull();
+
+    // Check if the custom header is in the correct position
+    const articleMetadata = document.getElementById('article-metadata');
+    expect(articleMetadata.nextElementSibling).toBe(customHeader);
+
+    // Check if the update information is correct
+    const updateInfo = customHeader.querySelector('p');
+    expect(updateInfo).not.toBeNull();
+    expect(updateInfo.innerHTML).toContain('英語版の更新日');
+  });
+});
