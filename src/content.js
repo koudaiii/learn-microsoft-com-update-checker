@@ -6,8 +6,10 @@ const CONFIG = {
   DEBUG_PARAM: 'jp-learn-microsoft-com-update-checker-debug',
   SELECTORS: {
     DATE_ELEMENT: 'local-time',
-    THEME_BUTTON: 'button[data-theme-to][aria-pressed="true"]',
   },
+  // Theme class names set on <html> (document.documentElement), e.g. "theme-dark"
+  THEME_CLASS_PREFIX: 'theme-',
+  THEME_NAMES: ['dark', 'high-contrast', 'light'],
   STYLES: {
     ALERT: {
       margin: '5px',
@@ -99,6 +101,15 @@ const calculateTimeAgo = (timeDifference, currentLang) => {
 
 const getTextColorClass = (theme) => {
   return CONFIG.CLASSES.THEMES[theme] || CONFIG.CLASSES.THEMES.default;
+};
+
+// Read the active theme directly from the <html> element's class list
+// (e.g. "theme-dark"). Returns null if no theme class is present.
+const getCurrentTheme = () => {
+  const { classList } = document.documentElement;
+  return CONFIG.THEME_NAMES.find(
+    (name) => classList.contains(CONFIG.THEME_CLASS_PREFIX + name)
+  ) || null;
 };
 
 const applyStyles = (element, styles) => {
@@ -196,9 +207,8 @@ const applyStyles = (element, styles) => {
     }
 
     const updateClass = () => {
-      // if theme is selected, apply appropriate text color based on theme
-      const themeButton = document.querySelector(CONFIG.SELECTORS.THEME_BUTTON);
-      const theme = themeButton.getAttribute("data-theme-to");
+      // Read the active theme directly from the <html> element's class list
+      const theme = getCurrentTheme();
       const textColorClass = getTextColorClass(theme);
       console.log("textColorClass:", textColorClass);
 
@@ -228,8 +238,12 @@ const applyStyles = (element, styles) => {
       updateInfo.innerHTML = informationIcon + `${languageLabel}: <a href="${englishUrl}" target="_blank" class="${textColorClass}">${englishDate.toLocaleDateString(currentLang)}${timeAgoStr}</a>`;
     }
     updateClass();
+    // Watch for theme changes on the <html> element's class attribute
     const observer = new MutationObserver(updateClass);
-    observer.observe(document.querySelector(CONFIG.SELECTORS.THEME_BUTTON), { attributes: true });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
   } catch (error) {
     console.error("Error fetching English page:", error);
   }
