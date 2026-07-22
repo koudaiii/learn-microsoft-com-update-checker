@@ -98,7 +98,13 @@ describe('learn.microsoft.com Update Checker E2E Test', () => {
           const themeButton = document.querySelector(`button[data-theme-to="${themeColor}"]`);
           themeButton.click();
         }, testCase.themeColor);
-        await page.waitForSelector('button[aria-pressed="true"]');
+        // The site signals the active theme via a `theme-*` class on <html>
+        // (it no longer sets aria-pressed="true" on the theme buttons).
+        await page.waitForFunction(
+          (theme) => document.documentElement.classList.contains(`theme-${theme}`),
+          {},
+          testCase.themeColor
+        );
 
         // Wait for the time element with the 'local-time' attribute to be added
         await page.waitForSelector('local-time');
@@ -151,7 +157,13 @@ describe('learn.microsoft.com Update Checker E2E Test', () => {
           themeButton.click();
         }, testCase.themeColor);
 
-        await page.waitForSelector('button[aria-pressed="true"]');
+        // The site signals the active theme via a `theme-*` class on <html>
+        // (it no longer sets aria-pressed="true" on the theme buttons).
+        await page.waitForFunction(
+          (theme) => document.documentElement.classList.contains(`theme-${theme}`),
+          {},
+          testCase.themeColor
+        );
 
         const hasNotTextColorClass = await page.evaluate((textElementSelector) => {
           const textElement = document.querySelector(textElementSelector);
